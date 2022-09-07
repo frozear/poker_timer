@@ -22,4 +22,4 @@ python3 poker.py
 
 ## Credits
 
-Sound tiauo.ogg has been made by Amada44 (Own work) and shared on Wikimedia Commons ([CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0))
+Sound Beep-09.ogg has been made by Rockhusho (Own work) and shared on Wikimedia Commons ([CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0))
