@@ -2,7 +2,7 @@
 Poker timer to make our tournaments easier
 
 ## Setup
-Use pip to install the required modules (pygame only so far):
+Use pip to install the required modules:
 
 ```
 pip3 install -r requirements.txt
@@ -17,7 +17,6 @@ python3 poker.py
 ## Controls
 - Arrow keys or number keys - adjust player numbers
 - Space - pause
-- Return - skip round
 - Escape - exit
 
 ## Credits
