@@ -1,126 +1,387 @@
 #!/usr/bin/python3
-import sys
-import time
-from datetime import datetime, timedelta
-from os import environ
-environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
-import pygame
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QTimer, QTime
+from datetime import datetime
+import sys, time
+from playsound import playsound
 
-def render_time(time):
-	return "%2d:%02d" % (time.seconds//60, round(time.seconds % 60))
+class Ui_mainWindow(object):
+    def setupUi(self, mainWindow):
+        mainWindow.setObjectName("mainWindow")
+        mainWindow.setFixedSize(586, 623)
+        self.verticalLayoutWidget = QtWidgets.QWidget(mainWindow)
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(30, 30, 521, 542))
+        self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
+        self.verticalLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.timeLabel = QtWidgets.QLabel(self.verticalLayoutWidget)
+        font = QtGui.QFont()
+        font.setPointSize(80)
+        self.timeLabel.setFont(font)
+        self.timeLabel.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.timeLabel.setText("")
+        self.timeLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.timeLabel.setObjectName("timeLabel")
+        self.verticalLayout.addWidget(self.timeLabel)
+        spacerItem = QtWidgets.QSpacerItem(20, 18, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        self.verticalLayout.addItem(spacerItem)
+        self.levelLabel = QtWidgets.QLabel(self.verticalLayoutWidget)
+        palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(85, 255, 127))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(85, 255, 127))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(99, 103, 106))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
+        self.levelLabel.setPalette(palette)
+        font = QtGui.QFont()
+        font.setPointSize(20)
+        font.setUnderline(True)
+        self.levelLabel.setFont(font)
+        self.levelLabel.setText("")
+        self.levelLabel.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignHCenter)
+        self.levelLabel.setObjectName("levelLabel")
+        self.verticalLayout.addWidget(self.levelLabel)
+        self.blindsLabel = QtWidgets.QLabel(self.verticalLayoutWidget)
+        font = QtGui.QFont()
+        font.setPointSize(60)
+        self.blindsLabel.setFont(font)
+        self.blindsLabel.setText("")
+        self.blindsLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.blindsLabel.setObjectName("blindsLabel")
+        self.verticalLayout.addWidget(self.blindsLabel)
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.previousstaticLabel = QtWidgets.QLabel(self.verticalLayoutWidget)
+        palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(85, 255, 127))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(85, 255, 127))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(99, 103, 106))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
+        self.previousstaticLabel.setPalette(palette)
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setUnderline(True)
+        self.previousstaticLabel.setFont(font)
+        self.previousstaticLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.previousstaticLabel.setObjectName("previousstaticLabel")
+        self.horizontalLayout.addWidget(self.previousstaticLabel)
+        self.nextstaticLabel = QtWidgets.QLabel(self.verticalLayoutWidget)
+        palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(85, 255, 127))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 255, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 255, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.BrightText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 255, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Highlight, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 255, 0, 128))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(85, 255, 127))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 255, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 255, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.BrightText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 255, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 255, 0, 128))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(99, 103, 106))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(89, 90, 92))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 255, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.BrightText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(38, 44, 49))#unindent does not match any outer indentation level
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Highlight, brush)
+        brush = QtGui.QBrush(QtGui.QColor(222, 222, 222, 128))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
+        self.nextstaticLabel.setPalette(palette)
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setItalic(False)
+        font.setUnderline(True)
+        self.nextstaticLabel.setFont(font)
+        self.nextstaticLabel.setAcceptDrops(False)
+        self.nextstaticLabel.setTextFormat(QtCore.Qt.AutoText)
+        self.nextstaticLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.nextstaticLabel.setObjectName("nextstaticLabel")
+        self.horizontalLayout.addWidget(self.nextstaticLabel)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.previousblindsLabel = QtWidgets.QLabel(self.verticalLayoutWidget)
+        font = QtGui.QFont()
+        font.setPointSize(32)
+        self.previousblindsLabel.setFont(font)
+        self.previousblindsLabel.setText("")
+        self.previousblindsLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.previousblindsLabel.setObjectName("previousblindsLabel")
+        self.horizontalLayout_2.addWidget(self.previousblindsLabel)
+        self.nextblindsLabel = QtWidgets.QLabel(self.verticalLayoutWidget)
+        font = QtGui.QFont()
+        font.setPointSize(32)
+        self.nextblindsLabel.setFont(font)
+        self.nextblindsLabel.setText("")
+        self.nextblindsLabel.setTextFormat(QtCore.Qt.AutoText)
+        self.nextblindsLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.nextblindsLabel.setObjectName("nextblindsLabel")
+        self.horizontalLayout_2.addWidget(self.nextblindsLabel)
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.playerstaticLabel = QtWidgets.QLabel(self.verticalLayoutWidget)
+        palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(85, 255, 127))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(85, 255, 127))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(99, 103, 106))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
+        self.playerstaticLabel.setPalette(palette)
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setUnderline(True)
+        self.playerstaticLabel.setFont(font)
+        self.playerstaticLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.playerstaticLabel.setObjectName("playerstaticLabel")
+        self.horizontalLayout_3.addWidget(self.playerstaticLabel)
+        self.avgstackstaticLabel = QtWidgets.QLabel(self.verticalLayoutWidget)
+        palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(85, 255, 127))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(85, 255, 127))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(99, 103, 106))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
+        self.avgstackstaticLabel.setPalette(palette)
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setUnderline(True)
+        self.avgstackstaticLabel.setFont(font)
+        self.avgstackstaticLabel.setAcceptDrops(False)
+        self.avgstackstaticLabel.setAutoFillBackground(False)
+        self.avgstackstaticLabel.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.avgstackstaticLabel.setTextFormat(QtCore.Qt.AutoText)
+        self.avgstackstaticLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.avgstackstaticLabel.setObjectName("avgstackstaticLabel")
+        self.horizontalLayout_3.addWidget(self.avgstackstaticLabel)
+        self.verticalLayout.addLayout(self.horizontalLayout_3)
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.playersLabel = QtWidgets.QLabel(self.verticalLayoutWidget)
+        font = QtGui.QFont()
+        font.setPointSize(32)
+        self.playersLabel.setFont(font)
+        self.playersLabel.setText("")
+        self.playersLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.playersLabel.setObjectName("playersLabel")
+        self.horizontalLayout_4.addWidget(self.playersLabel)
+        self.averagestackLabel = QtWidgets.QLabel(self.verticalLayoutWidget)
+        font = QtGui.QFont()
+        font.setPointSize(32)
+        self.averagestackLabel.setFont(font)
+        self.averagestackLabel.setText("")
+        self.averagestackLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.averagestackLabel.setObjectName("averagestackLabel")
+        self.horizontalLayout_4.addWidget(self.averagestackLabel)
+        self.verticalLayout.addLayout(self.horizontalLayout_4)
+        self.hackLineEdit = QtWidgets.QLineEdit(mainWindow)
+        self.hackLineEdit.setGeometry(QtCore.QRect(0, 0, 0, 0))
+        self.hackLineEdit.setObjectName("blindstextEdit")
+        self.hackLineEdit.keyPressEvent = self.keyPressEvent
+        self.retranslateUi(mainWindow)
+        QtCore.QMetaObject.connectSlotsByName(mainWindow)
+        
+    def keyPressEvent(self, event):
+        global remainingPlayers, paused
+        if event.key() == QtCore.Qt.Key_Down and remainingPlayers != 1:
+            remainingPlayers -= 1
+        elif event.key() == QtCore.Qt.Key_Up and remainingPlayers < players:
+            remainingPlayers += 1
+        elif event.key() == QtCore.Qt.Key_Space:
+            paused = not paused
+        else:
+            pass
 
-def render_frame(time, big_blind, next_big_blind, players, timer_done):
-	small_blind = big_blind/2
-	next_small_blind = next_big_blind/2
-	screen.fill(BGCOLOR)
 
-	if timer_done == True:
-		time_surface = small_font.render("TIMER DONE!", True, STOPPEDCOLOR)
-		blind_surface = small_font.render("%d / %d" % (big_blind, small_blind), True, FONTCOLOR)
-		player_surface = very_small_font.render("Player Count: %d" % (players), True, FONTCOLOR)
-		stack_surface = very_small_font.render("Average Stack: %d" % (total_chips/players), True, FONTCOLOR)
-		screen.blit(time_surface,(60,200))
-		screen.blit(blind_surface,(60,450))
-		screen.blit(player_surface,(60,60))
-		screen.blit(stack_surface,(60,100))
-		
-	else:
-		time_surface = big_font.render(render_time(time), True, STOPPEDCOLOR if paused else FONTCOLOR)
-		blind_surface = small_font.render("%d / %d" % (big_blind, small_blind), True, FONTCOLOR)
-		player_surface = very_small_font.render("Player Count: %d" % (players), True, FONTCOLOR)
-		stack_surface = very_small_font.render("Average Stack: %d" % (total_chips/players), True, FONTCOLOR)
-		next_blind_surface = very_small_font.render("Next Blinds: %d / %d" % (next_big_blind, next_small_blind), True, FONTCOLOR)
-		screen.blit(time_surface,(60,150))
-		screen.blit(blind_surface,(60,450))
-		screen.blit(player_surface,(60,60))
-		screen.blit(stack_surface,(60,100))
-		screen.blit(next_blind_surface,(60,700))
+    def retranslateUi(self, mainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        mainWindow.setWindowTitle(_translate("mainWindow", "Poker Timer"))
+        self.previousstaticLabel.setText(_translate("mainWindow", "Previous"))
+        self.nextstaticLabel.setText(_translate("mainWindow", "Next"))
+        self.playerstaticLabel.setText(_translate("mainWindow", "Players"))
+        self.avgstackstaticLabel.setText(_translate("mainWindow", "Average Stack"))
+        
+class Ui_PokerTimerSetup(object):
+    def setupUi(self, PokerTimerSetup):
+        PokerTimerSetup.setObjectName("PokerTimerSetup")
+        PokerTimerSetup.resize(285, 334)
+        self.stackspinBox = QtWidgets.QSpinBox(PokerTimerSetup)
+        self.stackspinBox.setGeometry(QtCore.QRect(20, 200, 113, 32))
+        self.stackspinBox.setObjectName("stackspinBox")
+        self.stackspinBox.setSingleStep(100)
+        self.stackspinBox.setMaximum(99999999)
+        self.stackspinBox.setProperty("value", 3000)
+        self.playersspinBox = QtWidgets.QSpinBox(PokerTimerSetup)
+        self.playersspinBox.setGeometry(QtCore.QRect(20, 50, 51, 32))
+        self.playersspinBox.setProperty("value", 6)
+        self.playersspinBox.setObjectName("playersspinBox")
+        self.label = QtWidgets.QLabel(PokerTimerSetup)
+        self.label.setGeometry(QtCore.QRect(20, 20, 111, 21))
+        self.label.setObjectName("label")
+        self.label_2 = QtWidgets.QLabel(PokerTimerSetup)
+        self.label_2.setGeometry(QtCore.QRect(20, 90, 111, 18))
+        self.label_2.setObjectName("label_2")
+        self.label_3 = QtWidgets.QLabel(PokerTimerSetup)
+        self.label_3.setGeometry(QtCore.QRect(20, 170, 111, 18))
+        self.label_3.setObjectName("label_3")
+        self.label_4 = QtWidgets.QLabel(PokerTimerSetup)
+        self.label_4.setGeometry(QtCore.QRect(190, 20, 81, 18))
+        self.label_4.setObjectName("label_4")
+        self.minutesspinBox = QtWidgets.QSpinBox(PokerTimerSetup)
+        self.minutesspinBox.setGeometry(QtCore.QRect(20, 120, 51, 32))
+        self.minutesspinBox.setProperty("value", 20)
+        self.minutesspinBox.setObjectName("minutesspinBox")
+        self.nextButton = QtWidgets.QPushButton(PokerTimerSetup, clicked = lambda: main.startGame())
+        self.nextButton.setGeometry(QtCore.QRect(110, 270, 84, 34))
+        self.nextButton.setObjectName("nextButton")
+        self.blindstextEdit = QtWidgets.QTextEdit(PokerTimerSetup)
+        self.blindstextEdit.setGeometry(QtCore.QRect(190, 50, 71, 171))
+        self.blindstextEdit.setObjectName("blindstextEdit")
+        self.label_2.raise_()
+        self.stackspinBox.raise_()
+        self.playersspinBox.raise_()
+        self.label_3.raise_()
+        self.label_4.raise_()
+        self.label.raise_()
+        self.minutesspinBox.raise_()
+        self.nextButton.raise_()
+        self.blindstextEdit.raise_()
+        self.retranslateUi(PokerTimerSetup)
+        QtCore.QMetaObject.connectSlotsByName(PokerTimerSetup)
+        PokerTimerSetup.setTabOrder(self.playersspinBox, self.stackspinBox)
 
+    def retranslateUi(self, PokerTimerSetup):
+        _translate = QtCore.QCoreApplication.translate
+        PokerTimerSetup.setWindowTitle(_translate("PokerTimerSetup", "Poker Timer Setup"))
+        #self.stackspinBox.setPlaceholderText(_translate("PokerTimerSetup", "5000"))
+        self.label.setText(_translate("PokerTimerSetup", "How Many Players?"))
+        self.label_2.setText(_translate("PokerTimerSetup", "Minutes per round"))
+        self.label_3.setText(_translate("PokerTimerSetup", "Starting Stack Size"))
+        self.label_4.setText(_translate("PokerTimerSetup", "List Big Blinds"))
+        self.nextButton.setText(_translate("PokerTimerSetup", "Start Game"))
 
-def pause():
-	global paused, time, start
-	if not paused:
-		# start pause
-		paused = True
-	else:
-		# stop pause
-		paused = False
-		paused_for_time = datetime.now() - time_now
-		start = start + paused_for_time
+class main(object):
+    
+    def startGame(self):
+        global players, remainingPlayers, level, paused
+        players = int(startUi.playersspinBox.text())
+        remainingPlayers = players
+        level = 0
+        paused = False
+        start = datetime.now()
+        main.getNewRound()
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.runGame)
+        self.timer.start(1000)
+        PokerTimerSetup.hide()
+        mainWindow.show()
+        
+    def getNewRound(self):
+        global timer_end, level
+        level_duration = int(startUi.minutesspinBox.text())
+        level_seconds = (level_duration * 60)
+        start = time.time()
+        blindsInput = (startUi.blindstextEdit.toPlainText())
+        blinds = (blindsInput.split("\n"))
+        bigBlind = float(blinds[level])
+        smallBlind = (bigBlind/2)
+        mainUi.blindsLabel.setText("%d / %d" % (bigBlind, smallBlind))
+      
+        try:
+            nextbigBlind = float(blinds[(level + 1)])
+            nextsmallBlind = (nextbigBlind/2)
+            mainUi.nextblindsLabel.setText("%d / %d" % (nextbigBlind, nextsmallBlind))
+        
+        except IndexError:
+		        
+                mainUi.nextblindsLabel.setText("Done")
+                
 
-def timer_done(sound = True):
-	global alert_sound, start, blind_level, next_blind_level
-	if sound:
-		alert_sound.play()
-	start = datetime.now()
-	blind_level = blind_level + 1
-	next_blind_level = next_blind_level + 1
+        
+        previousbigBlind = float(blinds[(level - 1)])
+        previoussmallBlind = (previousbigBlind/2)
+        if level == 0:
+            mainUi.previousblindsLabel.setText("none")
+        else:    
+            mainUi.previousblindsLabel.setText("%d / %d" % (previousbigBlind, previoussmallBlind))
+        level += 1
+        timer_end = (level_seconds + start)
+        playsound("Beep-09.ogg")
+    
+    def runGame(self):
+        global level, timer_end
+        if paused == True:
+            timer_end += 1
+            mainUi.timeLabel.setText("Paused")
+        else:
+            mainUi.levelLabel.setText("Level %d" % level)
+            mainUi.playersLabel.setText("%d / %d" % (remainingPlayers, players))
+            startingStack = int(startUi.stackspinBox.text())
+            averageStack = str(round((startingStack)*(players)/(remainingPlayers)))
+            mainUi.averagestackLabel.setText(averageStack)
+            now = time.time()
+            timeRemaining = int(timer_end - now)
+            formatted_time = time.strftime('%-M:%S', time.gmtime(timeRemaining))
+            mainUi.timeLabel.setText(str(formatted_time))
+            if timeRemaining < 1:
+                main.getNewRound()
+            else:
+                pass
 
-
-players = int(input('How Many Players? '))
-starting_stack = int(input("How many chips in each player's starting stack? "))
-blind_duration = int(input('How many minutes will each rounds be? '))
-blind_list = input("List Big Blinds in order with a space between like '20 40 60 ...' ")
-blind_level = 0
-next_blind_level = 1
-total_chips = (players * starting_stack)
-blinds = (blind_list.split(" "))
-
-start = datetime.now()
-paused = False
-INTERVAL =  timedelta(minutes = blind_duration)
-BGCOLOR = (32,32,32)
-FONTCOLOR = (240, 240, 240)
-STOPPEDCOLOR = (240, 30, 30)
-
-pygame.display.init()
-pygame.display.set_caption("Poker Timer")
-screen = pygame.display.set_mode((1024, 768))
-
-pygame.mixer.init()
-alert_sound = pygame.mixer.Sound(file = "Beep-09.ogg")
-#alert_sound.set_volume(0.5)
-
-pygame.font.init()
-big_font = pygame.font.SysFont('DejaVu Sans', 240)
-small_font = pygame.font.SysFont('DejaVu Sans', 120)
-very_small_font = pygame.font.SysFont('DejaVu Sans', 30)
-
-while 1:
-	if not paused:
-		time_now = datetime.now()
-
-	if (INTERVAL < time_now - start):
-		timer_done()
-
-	try:
-		render_frame(INTERVAL - (time_now - start), int(blinds[(blind_level)]), int(blinds[(next_blind_level)]), players, False)	
-
-	except IndexError:
-		break
-	
-	for event in pygame.event.get():
-		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_RETURN:
-				timer_done(sound = False)
-			elif event.key == pygame.K_SPACE:
-				pause()
-			elif event.key == pygame.K_ESCAPE:
-				sys.exit()
-			else:
-				# change number of players
-				if event.key == pygame.K_UP:
-					players = players + 1
-				elif event.key == pygame.K_DOWN:
-					if players > 1:
-						players = players - 1
-				else:
-					new_players = event.key - ord('0')
-	
-		if event.type == pygame.QUIT:
-			sys.exit()
-	pygame.display.flip()
-	time.sleep(0.2)
-render_frame(0, int(blinds[(blind_level)]), 0, players, True)
-pygame.display.flip()
-input("Press Enter to Close")
+if __name__ == "__main__":
+    
+    app = QtWidgets.QApplication(sys.argv)
+    mainWindow = QtWidgets.QWidget()
+    mainUi = Ui_mainWindow()
+    mainUi.setupUi(mainWindow)
+    PokerTimerSetup = QtWidgets.QWidget()
+    startUi = Ui_PokerTimerSetup()
+    startUi.setupUi(PokerTimerSetup)
+    main = main()
+    PokerTimerSetup.show()
+    sys.exit(app.exec_())
