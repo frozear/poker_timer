@@ -117,7 +117,7 @@ class Ui_mainWindow(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 255, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.BrightText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(38, 44, 49))#unindent does not match any outer indentation level
+        brush = QtGui.QBrush(QtGui.QColor(38, 44, 49))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Highlight, brush)
         brush = QtGui.QBrush(QtGui.QColor(222, 222, 222, 128))
@@ -292,12 +292,11 @@ class Ui_PokerTimerSetup(object):
         self.blindstextEdit.raise_()
         self.retranslateUi(PokerTimerSetup)
         QtCore.QMetaObject.connectSlotsByName(PokerTimerSetup)
-	PokerTimerSetup.setTabOrder(self.minutesspinBox, self.stackspinBox)
+        PokerTimerSetup.setTabOrder(self.minutesspinBox, self.stackspinBox)
 
     def retranslateUi(self, PokerTimerSetup):
         _translate = QtCore.QCoreApplication.translate
         PokerTimerSetup.setWindowTitle(_translate("PokerTimerSetup", "Poker Timer Setup"))
-        #self.stackspinBox.setPlaceholderText(_translate("PokerTimerSetup", "5000"))
         self.label.setText(_translate("PokerTimerSetup", "How Many Players?"))
         self.label_2.setText(_translate("PokerTimerSetup", "Minutes per round"))
         self.label_3.setText(_translate("PokerTimerSetup", "Starting Stack Size"))
@@ -306,13 +305,16 @@ class Ui_PokerTimerSetup(object):
 
 class main(object):
     def startGame(self):
-        global players, remainingPlayers, level, startingStack, paused
+        global players, remainingPlayers, level, startingStack, blinds, level_seconds, paused
         startingStack = int(startUi.stackspinBox.text())
         players = int(startUi.playersspinBox.text())
+        level_duration = int(startUi.minutesspinBox.text())
+        level_seconds = (level_duration * 60)
         remainingPlayers = players
         level = 0
         paused = False
-        start = datetime.now()
+        blindsInput = (startUi.blindstextEdit.toPlainText())
+        blinds = (blindsInput.split("\n"))
         main.getNewRound()
         self.timer = QTimer()
         self.timer.timeout.connect(self.runGame)
@@ -320,37 +322,6 @@ class main(object):
         PokerTimerSetup.hide()
         mainWindow.show()
         
-    def getNewRound(self):
-        global timer_end, level
-        level_duration = int(startUi.minutesspinBox.text())
-        level_seconds = (level_duration * 60)
-        start = time.time()
-        blindsInput = (startUi.blindstextEdit.toPlainText())
-        blinds = (blindsInput.split("\n"))
-        try:
-            bigBlind = float(blinds[level])
-            smallBlind = (bigBlind/2)
-            mainUi.blindsLabel.setText("%d / %d" % (bigBlind, smallBlind))
-        except IndexError:
-            main.endGame()
-        try:
-            nextbigBlind = float(blinds[(level + 1)])
-            nextsmallBlind = (nextbigBlind/2)
-            mainUi.nextblindsLabel.setText("%d / %d" % (nextbigBlind, nextsmallBlind))
-        
-        except IndexError:
-		        mainUi.nextblindsLabel.setText("Done")
-        previousbigBlind = float(blinds[(level - 1)])
-        previoussmallBlind = (previousbigBlind/2)
-        if level == 0:
-            mainUi.previousblindsLabel.setText("none")
-        else:    
-            mainUi.previousblindsLabel.setText("%d / %d" % (previousbigBlind, previoussmallBlind))
-        level += 1
-        mainUi.levelLabel.setText("Level %d" % level)
-        timer_end = (level_seconds + start)
-        playsound("Beep-09.ogg")
-    
     def runGame(self):
         global level, timer_end
         if paused == True:
@@ -366,15 +337,38 @@ class main(object):
             mainUi.timeLabel.setText(str(formatted_time))
             if timeRemaining < 1:
                 main.getNewRound()
-            else:
-                pass
 
+    def getNewRound(self):
+        global timer_end, level
+        start = time.time()
+        timer_end = (level_seconds + start)
+        try:
+            bigBlind = float(blinds[level])
+            smallBlind = (bigBlind/2)
+            mainUi.blindsLabel.setText("%d / %d" % (bigBlind, smallBlind))
+        except IndexError:
+            main.endGame()
+        try:
+            nextbigBlind = float(blinds[(level + 1)])
+            nextsmallBlind = (nextbigBlind/2)
+            mainUi.nextblindsLabel.setText("%d / %d" % (nextbigBlind, nextsmallBlind))
+        except IndexError:
+		        mainUi.nextblindsLabel.setText("Done")
+        previousbigBlind = float(blinds[(level - 1)])
+        previoussmallBlind = (previousbigBlind/2)
+        if level == 0:
+            mainUi.previousblindsLabel.setText("None")
+        else:    
+            mainUi.previousblindsLabel.setText("%d / %d" % (previousbigBlind, previoussmallBlind))
+        level += 1
+        mainUi.levelLabel.setText("Level %d" % level)
+        playsound("Beep-09.ogg")
+    
     def endGame(self):
         mainUi.timeLabel.setText("Timeout")
         self.timer.stop()
 
 if __name__ == "__main__":
-    
     app = QtWidgets.QApplication(sys.argv)
     mainWindow = QtWidgets.QWidget()
     mainUi = Ui_mainWindow()
