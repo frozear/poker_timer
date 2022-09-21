@@ -292,7 +292,7 @@ class Ui_PokerTimerSetup(object):
         self.blindstextEdit.raise_()
         self.retranslateUi(PokerTimerSetup)
         QtCore.QMetaObject.connectSlotsByName(PokerTimerSetup)
-        PokerTimerSetup.setTabOrder(self.playersspinBox, self.stackspinBox)
+	PokerTimerSetup.setTabOrder(self.minutesspinBox, self.stackspinBox)
 
     def retranslateUi(self, PokerTimerSetup):
         _translate = QtCore.QCoreApplication.translate
