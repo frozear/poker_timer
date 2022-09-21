@@ -17,7 +17,6 @@ python3 poker.py
 ## Controls
 - Arrow keys or number keys - adjust player numbers
 - Space - pause
-- Escape - exit
 
 ## Credits
 
