@@ -237,7 +237,6 @@ class Ui_mainWindow(object):
         else:
             pass
 
-
     def retranslateUi(self, mainWindow):
         _translate = QtCore.QCoreApplication.translate
         mainWindow.setWindowTitle(_translate("mainWindow", "Poker Timer"))
@@ -306,9 +305,9 @@ class Ui_PokerTimerSetup(object):
         self.nextButton.setText(_translate("PokerTimerSetup", "Start Game"))
 
 class main(object):
-    
     def startGame(self):
-        global players, remainingPlayers, level, paused
+        global players, remainingPlayers, level, startingStack, paused
+        startingStack = int(startUi.stackspinBox.text())
         players = int(startUi.playersspinBox.text())
         remainingPlayers = players
         level = 0
@@ -317,7 +316,7 @@ class main(object):
         main.getNewRound()
         self.timer = QTimer()
         self.timer.timeout.connect(self.runGame)
-        self.timer.start(1000)
+        self.timer.start(500)
         PokerTimerSetup.hide()
         mainWindow.show()
         
@@ -328,21 +327,19 @@ class main(object):
         start = time.time()
         blindsInput = (startUi.blindstextEdit.toPlainText())
         blinds = (blindsInput.split("\n"))
-        bigBlind = float(blinds[level])
-        smallBlind = (bigBlind/2)
-        mainUi.blindsLabel.setText("%d / %d" % (bigBlind, smallBlind))
-      
+        try:
+            bigBlind = float(blinds[level])
+            smallBlind = (bigBlind/2)
+            mainUi.blindsLabel.setText("%d / %d" % (bigBlind, smallBlind))
+        except IndexError:
+            main.endGame()
         try:
             nextbigBlind = float(blinds[(level + 1)])
             nextsmallBlind = (nextbigBlind/2)
             mainUi.nextblindsLabel.setText("%d / %d" % (nextbigBlind, nextsmallBlind))
         
         except IndexError:
-		        
-                mainUi.nextblindsLabel.setText("Done")
-                
-
-        
+		        mainUi.nextblindsLabel.setText("Done")
         previousbigBlind = float(blinds[(level - 1)])
         previoussmallBlind = (previousbigBlind/2)
         if level == 0:
@@ -350,6 +347,7 @@ class main(object):
         else:    
             mainUi.previousblindsLabel.setText("%d / %d" % (previousbigBlind, previoussmallBlind))
         level += 1
+        mainUi.levelLabel.setText("Level %d" % level)
         timer_end = (level_seconds + start)
         playsound("Beep-09.ogg")
     
@@ -359,9 +357,7 @@ class main(object):
             timer_end += 1
             mainUi.timeLabel.setText("Paused")
         else:
-            mainUi.levelLabel.setText("Level %d" % level)
             mainUi.playersLabel.setText("%d / %d" % (remainingPlayers, players))
-            startingStack = int(startUi.stackspinBox.text())
             averageStack = str(round((startingStack)*(players)/(remainingPlayers)))
             mainUi.averagestackLabel.setText(averageStack)
             now = time.time()
@@ -372,6 +368,10 @@ class main(object):
                 main.getNewRound()
             else:
                 pass
+
+    def endGame(self):
+        mainUi.timeLabel.setText("Timeout")
+        self.timer.stop()
 
 if __name__ == "__main__":
     
